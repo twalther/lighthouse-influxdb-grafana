@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "influx": "^5.0.7",
+    "lighthouse": "^2.7.0"
+  }
+}
