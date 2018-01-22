@@ -18,10 +18,13 @@ The database lighthouse will be created if it does not exists. Should be moved t
 ## Grafana
 Add a datasource called Lighthouse which points at the InfluxDB called lighthouse. An example dashboard is called `Google-example.json` and is located in the misc folder. Import that file and select Lighhouse as the database for the example dashboard.
 
+[[https://github.com/twalther/lighthouse-influxdb-grafana/blob/master/misc/screenshot.png|alt=dashboard]]
+
 ## App
 Run `ENV=env.google node app.js` or use your own env/app-file (see Env file above).
 
 ## TODO
+- Verify that all measurements are correct
 - Cleanup, add env-variables for ports and more
 - Error handling...
 - Docker-compose
