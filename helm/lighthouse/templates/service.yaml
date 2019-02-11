@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "lighthouse.releasename" . }}-influxdb
+  labels:
+    app: {{ template "lighthouse.releasename" . }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8086
+    targetPort: 8086
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ template "lighthouse.releasename" . }} 
+tier: app
+

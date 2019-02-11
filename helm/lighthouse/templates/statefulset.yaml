@@ -1,0 +1,100 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: {{ template "lighthouse.releasename" . }}
+  labels:
+    app: {{ template "lighthouse.releasename" . }}
+    tier: app
+spec:
+  progressDeadlineSeconds: 300
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: {{ template "lighthouse.releasename" . }}
+      tier: app
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ template "lighthouse.releasename" . }}
+        version: {{ .Chart.Version }}
+        tier: app
+      name: {{ template "lighthouse.releasename" . }}
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.image.pullsecret }}
+      containers:
+      - name: {{ template "lighthouse.releasename" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        env:
+          - name: HELM_UPDATED
+            value: "{{ .Release.Time.Seconds }}"
+          - name: LIGHTHOUSE_SETTINGS
+            value: "env.settings"
+        resources:
+          requests:
+            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.resources.limits.memory }}
+            cpu: {{ .Values.resources.limits.cpu }}
+        securityContext:
+        runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSecponds: 30
+        volumeMounts: 
+        - name: config
+          mountPath: /app/env.settings.js
+          subPath: env.settings.js
+      - name: {{ template "lighthouse.releasename" . }}-influx
+        image: "influxdb:1.5.4"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        env:
+          - name: HELM_UPDATED
+            value: "{{ .Release.Time.Seconds }}"
+        resources:
+          requests:
+            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.resources.limits.memory }}
+            cpu: {{ .Values.resources.limits.cpu }}
+        securityContext:
+        runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always 
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSecponds: 30
+        volumeMounts:
+        - name: {{ template "lighthouse.releasename" . }}-influx
+          mountPath: /var/lib/influxdb
+      volumes:
+        - name: config
+          configMap: 
+            name: {{ template "lighthouse.releasename" . }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ template "lighthouse.releasename" . }}-influx
+      labels:
+        name: {{ template "lighthouse.releasename" . }}-influx
+      annotations:
+        volume.alpha.kubernetes.io/storage-class: anything
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.volumesize }}
+

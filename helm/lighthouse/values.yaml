@@ -1,0 +1,19 @@
+image:
+  #this is a mandatory field, populate this with registry link to your lighthouse docker image
+  repository: 
+  tag: "1.0.0"
+  pullPolicy: Always
+  pullsecret: #If you repo is private populate this. Secret must exist in the cluster already
+
+resources:
+  requests:
+    memory: 2048Mi
+    cpu: 2
+  limits:
+    memory: 3000Mi
+    cpu: 2
+lighthouse:
+  #list of urls to run the benchmark on
+  - "https://www.united.com/ual/en/us/flight-search/book-a-flight/"
+  - "http://google.com"
+volumesize: 10Gi

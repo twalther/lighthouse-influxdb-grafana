@@ -7,6 +7,18 @@ Combines [Lighthouse](https://developers.google.com/web/tools/lighthouse/) with 
 - InfluxDB (example dockerfile in misc folder)
 - Grafana (example dockerfile in misc folder)
 
+## Docker
+```
+cd docker ; docker build 
+```
+
+## Helm
+Tag your docker image and push to a registry.
+Populate commented out fields in values.yaml
+```
+helm install -n lighthouse .
+```
+
 ## Env file
 An example with Google (startpage and search) is included as `env.google.js`, copy and modify according to your own needs.
 
