@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "lighthouse.releasename" . }} 
+  labels:
+    app: {{ template "lighthouse.releasename" . }}
+data:
+  env.settings.js: |
+    module.exports = {
+        environment: 'settings',
+        urls: [
+          {{- range .Values.lighthouse }}
+              { name: "{{ . }}", url: "{{ . }}" },
+          {{- end }} 
+        ]
+    };
+
